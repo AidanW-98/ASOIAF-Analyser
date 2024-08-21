@@ -1,34 +1,33 @@
 from bs4 import BeautifulSoup
 import pandas
-import numpy
 import os
 from typing import Dict, List, Union
 
-# for each file
-# - get file into soup
-# - extract meaningful data from soup: Title, Summary, Characters (POV, Appearing, Referenced), Creatures, Chapter Rating (rating, votes)
-# - load and append meaningful data into pandas DF
-
 FILE_DIR = './chapter-data/101/' # looking at book 1 only
 
-class AsoiafAnalyser():
+class AsoiafDataProcessor():
     def __init__(self):
         self.chapter_files = [f for f in os.listdir(FILE_DIR) if '.html' in f]
         self.df = pandas.DataFrame(columns=["title","synposys","summary","characters.pov","characters.appearing","characters.referenced","rating"])
 
-    def extract_from_html(self):
+    @staticmethod
+    def load_html_as_soup(html_file_path) -> BeautifulSoup:
+            with open(html_file_path, 'r', encoding='utf-8') as file: 
+                html_content = file.read()
+            soup_content = BeautifulSoup(html_content, 'html.parser')
+            return soup_content
+    
+    def process_chapters(self):
         for file_name in self.chapter_files:
             index = file_name.split('.')[0]
             path = FILE_DIR + file_name
-            with open(path, 'r', encoding='utf-8') as file: html_content = file.read()
-            soup_content = BeautifulSoup(html_content, 'html.parser')
-            
+            soup_content = AsoiafDataProcessor.load_html_as_soup(path)
+
             title = soup_content.find('h1').get_text()
             synposys = soup_content.find(class_='subhead').get_text()
-            
-            rating = self.HTMLExtract.get_chapter_rating(soup_content)
-            summary = self.HTMLExtract.get_summary(soup_content)
-            characters = self.HTMLExtract.get_characters(soup_content)
+            rating = self.SoupExtract.get_chapter_rating(soup_content)
+            summary = self.SoupExtract.get_summary(soup_content)
+            characters = self.SoupExtract.get_characters(soup_content)
 
             entry = {
                 'title': title, 
@@ -39,12 +38,10 @@ class AsoiafAnalyser():
                 'characters.appearing': characters['appearing'],
                 'characters.referenced': characters['referenced']
             }
+
             self.df = pandas.concat([self.df, pandas.DataFrame([entry], index=[index])])
 
-            self.HTMLExtract.get_characters(soup_content)
-
-
-    class HTMLExtract(): 
+    class SoupExtract(): 
         @staticmethod
         def get_chapter_rating(soup_content: BeautifulSoup) -> float:
             r_heading = soup_content.find('h2', id='rating')
@@ -71,7 +68,6 @@ class AsoiafAnalyser():
             summary_text = '\n'.join(paragraphs)
 
             return summary_text
-
 
         @staticmethod
         def get_characters(soup_content: BeautifulSoup) -> Dict[str, Union[str, List[str]]]:
@@ -106,10 +102,3 @@ class AsoiafAnalyser():
                     characters['referenced'] = referenced_characters
             
             return characters
-
-if __name__ == "__main__":
-    analyzer = AsoiafAnalyser()
-    analyzer.extract_from_html()
-    print(analyzer.df)
-
-    # analyzer.HTMLExtract.get_characters()
