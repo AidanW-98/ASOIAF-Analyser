@@ -23,7 +23,7 @@ There is a rare circumstance where the input could not have any possible equival
 Any output which is not a Pandas Query Expression string must begin with "Error: ", even if there isn't a known error.
 Otherwise, the ouput must be ONLY a valid SQL Expression string.
 
-Now, you will be shown some examples. Then you will see the user's request - and you must respond to that request as instructed above.
+Now, you will be shown some examples.
 
 EXAMPLES 
 
@@ -47,6 +47,3 @@ Input:
 "what's the best rated chapter than Daenerys Targaryen is referred to in?"
 Output:
 "SELECT title FROM dataframe WHERE characters_appearing LIKE '%Daenerys Targaryen%' ORDER BY rating DESC LIMIT 1"
-
-
-USER INPUT:

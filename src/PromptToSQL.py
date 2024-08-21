@@ -13,10 +13,18 @@ class PromptToSQL():
             self.base_prompt = f"""{combined_string}"""
     
     def get_sql(self, user_query: str) -> str:
-        prompt = self.base_prompt + user_query
+        prompt = self.base_prompt
 
-        response = openai.completions.create(
-            model="davinci-002",
-            prompt=prompt,
-            max_tokens=150
+        # to do - update to chat model, using base prompt only once as system instructions.
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": user_query},
+            ],
+            temperature=0.2
         )
+
+        response_text = response.choices[0].message.content.strip('"')
+
+        return response_text

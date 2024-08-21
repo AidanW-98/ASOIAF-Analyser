@@ -25,10 +25,10 @@ class AsoiafAnalyzer():
         print(sql_query)
         self.query(sql_query)
     
-    def query_by_natural_language(self, nl_query: str):
+    def get_query_by_natural_language(self, nl_query: str) -> str:
         if self.sql_generator is None:
             self.sql_generator = PromptToSQL()
         sql_query = self.sql_generator.get_sql(nl_query)
 
         print("Based on user query, the following SQL has been produced:\n", sql_query, "\nresult:")
-        self.query(sql_query)
+        return sql_query
