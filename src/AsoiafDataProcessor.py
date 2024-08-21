@@ -8,7 +8,7 @@ FILE_DIR = './chapter-data/101/' # looking at book 1 only
 class AsoiafDataProcessor():
     def __init__(self):
         self.chapter_files = [f for f in os.listdir(FILE_DIR) if '.html' in f]
-        self.df = pandas.DataFrame(columns=["title","synposys","summary","characters.pov","characters.appearing","characters.referenced","rating"])
+        self.df = pandas.DataFrame(columns=["title","synposys","summary","characters_pov","characters_appearing","characters_referenced","rating"])
 
     @staticmethod
     def load_html_as_soup(html_file_path) -> BeautifulSoup:
@@ -34,9 +34,9 @@ class AsoiafDataProcessor():
                 'synposys': synposys, 
                 'rating': rating, 
                 'summary': summary,
-                'characters.pov': characters['pov'],
-                'characters.appearing': characters['appearing'],
-                'characters.referenced': characters['referenced']
+                'characters_pov': characters['pov'],
+                'characters_appearing': characters['appearing'],
+                'characters_referenced': characters['referenced']
             }
 
             self.df = pandas.concat([self.df, pandas.DataFrame([entry], index=[index])])

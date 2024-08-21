@@ -1,4 +1,5 @@
 from AsoiafDataProcessor import AsoiafDataProcessor
+from AsoiafAnalyzer import AsoiafAnalyzer
 
 # for each file
 # - get file into soup
@@ -7,7 +8,10 @@ from AsoiafDataProcessor import AsoiafDataProcessor
 # - transform with pandas queries (SQL-like)
 
 if __name__ == "__main__":
-    analyzer = AsoiafDataProcessor()
-    analyzer.process_chapters()
-    df = analyzer.df
+    processor = AsoiafDataProcessor()
+    processor.process_chapters()
+    df = processor.df
     print(df)
+
+    analyzer = AsoiafAnalyzer(df)
+    analyzer.example_quries()

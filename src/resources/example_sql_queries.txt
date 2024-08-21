@@ -1,0 +1,1 @@
+"SELECT title FROM dataframe WHERE characters_appearing LIKE '%Daenerys Targaryen%' ORDER BY rating DESC LIMIT 1"
