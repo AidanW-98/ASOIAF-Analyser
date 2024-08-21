@@ -1,9 +1,11 @@
 import json
 import pandas as pd
 import sqlite3
+from PromptToSQL import PromptToSQL
 
 # where we apply transformations
 class AsoiafAnalyzer():
+    sql_generator = None
     def __init__(self, df: pd.DataFrame):
         self.df = df.copy()
 
@@ -21,4 +23,12 @@ class AsoiafAnalyzer():
         print("What's the best chapter where Daenerys Targaryen appears?")
         sql_query = "SELECT title FROM dataframe WHERE characters_appearing LIKE '%Daenerys Targaryen%' ORDER BY rating DESC LIMIT 1"
         print(sql_query)
+        self.query(sql_query)
+    
+    def query_by_natural_language(self, nl_query: str):
+        if self.sql_generator is None:
+            self.sql_generator = PromptToSQL()
+        sql_query = self.sql_generator.get_sql(nl_query)
+
+        print("Based on user query, the following SQL has been produced:\n", sql_query, "\nresult:")
         self.query(sql_query)
