@@ -11,20 +11,20 @@ class PromptToSQL():
             prompt_list = f.readlines()
             combined_string = '\n'.join(line.strip() for line in prompt_list if line.strip())
             self.base_prompt = f"""{combined_string}"""
+
+        self.conversation_history = [{"role": "system", "content": self.base_prompt}]
     
     def get_sql(self, user_query: str) -> str:
-        prompt = self.base_prompt
+        # the conversation history should be sent at each call
+        self.conversation_history.append({"role": "user", "content": user_query})
 
-        # to do - update to chat model, using base prompt only once as system instructions.
         response = openai.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": user_query},
-            ],
+            messages=self.conversation_history,
             temperature=0.2
         )
 
         response_text = response.choices[0].message.content.strip('"')
+        self.conversation_history.append({"role": "assistant", "content": response_text})
 
         return response_text

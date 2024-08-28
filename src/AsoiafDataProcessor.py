@@ -5,15 +5,15 @@ from typing import Dict, List, Union
 
 FILE_DIR = './chapter-data/101/' # looking at book 1 only
 
+#extracting (from HTML into soup) and loading (from soup into pandas)
 class AsoiafDataProcessor():
     def __init__(self):
         self.chapter_files = [f for f in os.listdir(FILE_DIR) if '.html' in f]
         self.df = pandas.DataFrame(columns=["title","synposys","summary","characters_pov","characters_appearing","characters_referenced","rating"])
 
     @staticmethod
-    def load_html_as_soup(html_file_path) -> BeautifulSoup:
-            with open(html_file_path, 'r', encoding='utf-8') as file: 
-                html_content = file.read()
+    def load_html_as_soup(html_file_path: str) -> BeautifulSoup:
+            with open(html_file_path, 'r', encoding='utf-8') as file: html_content = file.read()
             soup_content = BeautifulSoup(html_content, 'html.parser')
             return soup_content
     
@@ -23,7 +23,7 @@ class AsoiafDataProcessor():
             path = FILE_DIR + file_name
             soup_content = AsoiafDataProcessor.load_html_as_soup(path)
 
-            title = soup_content.find('h1').get_text()
+            title = soup_content.find('h1').get_text()      # chapter title is always the first h1 heading
             synposys = soup_content.find(class_='subhead').get_text()
             rating = self.SoupExtract.get_chapter_rating(soup_content)
             summary = self.SoupExtract.get_summary(soup_content)
@@ -44,6 +44,8 @@ class AsoiafDataProcessor():
     class SoupExtract(): 
         @staticmethod
         def get_chapter_rating(soup_content: BeautifulSoup) -> float:
+            # rating exists in test in the paragraph following <h2 id=rating>
+
             r_heading = soup_content.find('h2', id='rating')
             if r_heading:
                 r_content = r_heading.find_next_sibling('p')
@@ -55,7 +57,7 @@ class AsoiafDataProcessor():
         
         @staticmethod
         def get_summary(soup_content: BeautifulSoup) -> str:
-            # the summary content is between the h2 headings: 'summary' and 'notes-characters'
+            # summary content is between the h2 headings: 'summary' and 'notes-characters'
 
             start_tag = soup_content.find('h2', id="summary")
             end_tag = soup_content.find('h2',id="notes-characters")
@@ -71,10 +73,7 @@ class AsoiafDataProcessor():
 
         @staticmethod
         def get_characters(soup_content: BeautifulSoup) -> Dict[str, Union[str, List[str]]]:
-            # expected structure:
-            # <h2, id="notes-characters">: characters
-            # <h3>POV<\h3> {content}, <h3>appearing<\h3> {content}, <h3>referenced<\h3> {content}
-            # <h2, id unknown>
+            # h3 headings exist for each [POV, appearing, referenced] following <h2 id=notes-character>
 
             characters = {'pov':"", 'appearing':[], 'referenced':[]}
             start_tag = soup_content.find('h2',id="notes-characters")
@@ -90,7 +89,7 @@ class AsoiafDataProcessor():
                 elif element.get_text() == "Appearing":
                     # comma seperated list of characters are on first bullet point only
                     appearing_el = element.find_next_sibling()
-                    html_el = appearing_el.find_next('li') 
+                    html_el = appearing_el.find_next('li')      # I SHOULD HAVE ENUMS FOR THE TAG TYPES
                     appearing_characters = [a.get_text() for a in html_el.find_all('a')]
                     characters['appearing'] = appearing_characters
 

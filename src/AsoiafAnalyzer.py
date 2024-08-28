@@ -3,10 +3,11 @@ import pandas as pd
 import sqlite3
 from PromptToSQL import PromptToSQL
 
-# where we apply transformations
+# where we apply transformations (in SQL)
 class AsoiafAnalyzer():
     sql_generator = None
     def __init__(self, df: pd.DataFrame):
+        # initative dataframe for use in SQL connection
         self.df = df.copy()
 
         self.df['characters_appearing'] = self.df['characters_appearing'].apply(json.dumps)
@@ -17,6 +18,9 @@ class AsoiafAnalyzer():
     
     def query(self, sql_query: str):
         result = pd.read_sql_query(sql_query, self.connection)
+        
+        if len(result)==1 & len(result.columns == 1): result = result.to_string()
+
         print(result)
 
     def example_quries(self):
@@ -30,5 +34,8 @@ class AsoiafAnalyzer():
             self.sql_generator = PromptToSQL()
         sql_query = self.sql_generator.get_sql(nl_query)
 
-        print("Based on user query, the following SQL has been produced:\n", sql_query, "\nresult:")
+        if sql_query[:5]=="Error":
+            raise ValueError(sql_query)
+
+        print("Based on user query, the following SQL has been produced: ", sql_query)
         return sql_query

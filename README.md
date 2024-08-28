@@ -10,7 +10,7 @@ Data will go through an ELT pipeline by the following means:
 
 ### Extract (ingest)
 
-Web scrapers via `requests` and `BeautifulSoup` will be called on `towerofthehand.com` and the data would be stored in a raw format of HTML content.
+Web scrapers via `requests` and `BeautifulSoup` will be called on `towerofthehand.com` and the raw data would be stored in HTML format.
 
 This will be done by the chapter; TOTH follows the format of: `towerofthehand.com/books/<book_ID>/<chapter_ID>`. `book_ID` is 101 for GoT and the `chapter_ID` iterates from `001` onwards for each chapter.
 

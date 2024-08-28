@@ -20,7 +20,7 @@ Additionally: title refers to the chapter title, all titles in the data set are 
 All queries must be case sensitive.
 
 There is a rare circumstance where the input could not have any possible equivalent query. If this is the case, say so very concisely as the output preceeded by the word "Error: ".
-Any output which is not a Pandas Query Expression string must begin with "Error: ", even if there isn't a known error.
+Any output which is not a SQL string must begin with "Error: ", even if there isn't a known error.
 Otherwise, the ouput must be ONLY a valid SQL Expression string.
 
 Now, you will be shown some examples.
@@ -41,7 +41,7 @@ Output:
 Input:
 "In detail, what happens in the third Bran chapters?"
 Output: 
-"SELECT summary FROM dataframe WHERE title LIKE '%AGOT Bran I%'"
+"SELECT summary FROM dataframe WHERE title LIKE '%AGOT Bran III%'"
 
 Input:
 "what's the best rated chapter than Daenerys Targaryen is referred to in?"
